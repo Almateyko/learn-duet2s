@@ -6,6 +6,7 @@ from tkinter import messagebox
 
 
 class Hover_Button(Button):
+    """ The Class that controls the highlighting of buttons on hover  """
 
     def __init__(self, master, **kw):
         Button.__init__(self, master=master, **kw)
@@ -21,6 +22,8 @@ class Hover_Button(Button):
 
 
 class Main_Menu(Frame):
+    """ The Class that defines the appearance of the Main menu and properties of the Main menu buttons """
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -109,6 +112,8 @@ class Main_Menu(Frame):
 
 
 class Settings_Menu(Frame):
+    """ The Class that defines the appearance of the Settings menu and properties of the Settings menu buttons  """
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -154,6 +159,7 @@ class Settings_Menu(Frame):
 
 
 def main():
+    """ The function that launches the graphical interface of the Main menu """
     window = Tk()
     window.geometry('850x600+530+170')
     app_1 = Main_Menu()
@@ -162,6 +168,8 @@ def main():
 
 
 def calculate():
+    """ The Function that is responsible for calculating utility bills """
+
     rate_dict = {'gas': 0, 'water': 0, 'electricity': 0}
     gas_calc = 0
     water_calc = 0
@@ -200,6 +208,8 @@ def calculate():
 
 
 def settings():
+    """ The function that launches the graphical interface of the Settings menu """
+
     global set_win
 
     set_win = Tk()
@@ -211,6 +221,8 @@ def settings():
 
 
 def settings_save():
+    """ The Function that is responsible for exiting the settings menu """
+
     answer = messagebox.askyesno(title='Закінчити редагування',
                                  message='Зберегти зміни?')
     if answer:
@@ -227,6 +239,8 @@ def settings_save():
 
 
 def rate_changing():
+    """ The Function that is responsible for creating/editing utility tariffs """
+
     rate_dict = dict(gas=0, water=0, electricity=0)
     try:
         if entry_gas.get() == '':
@@ -278,6 +292,8 @@ def rate_changing():
 
 
 def program_exit():
+    """ The Function that is responsible for exiting the program """
+
     if messagebox.askyesno(title='Завершення роботи',
                            message='Ви впевнені що хочете завершити роботу з програмою?'):
         exit()
