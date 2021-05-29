@@ -288,7 +288,7 @@ def rate_changing():
                 file.write('{}:{}\n'.format(key, val))
     except ValueError:
         messagebox.showerror('Помилка', 'Вказані дані не відповідають числовому формату. '
-                                            '\nБудь ласка, перевірте вказану інформацію')
+                                        '\nБудь ласка, перевірте вказану інформацію')
 
 
 def program_exit():
