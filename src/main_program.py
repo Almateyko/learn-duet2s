@@ -1,8 +1,16 @@
+""" This is a program that calculates the amounts charged for the use of utility rates. """
+
 # -- coding utf-8 --
 __author__ = 'Alexander Mateyko'
 
 from tkinter import *
 from tkinter import messagebox
+
+try:
+    from src.dict_functions import *
+except FileNotFoundError:
+    messagebox.showwarning('Увага!', 'Втрачено файли, які потрібні для роботи програми. Потрібне перевстановлення.')
+    exit()
 
 
 class Hover_Button(Button):
@@ -77,19 +85,19 @@ class Main_Menu(Frame):
         label_2 = Label(frame_2, text='Суми до сплати:', bg=frame_2['bg'], fg='white', font='Arial 17')
         label_2.place(x='105', y='30')
 
-        label_gas_2 = Label(frame_2, width=20, height=2, text='Лічильник газу \n(грн)',
+        label_gas_2 = Label(frame_2, width=20, height=2, text='Газопостачання \n(грн)',
                             bg=frame_2['bg'], fg='white', font='Arial 17')
         label_gas_2.place(x='70', y='100')
         label_gas_calculated = Label(frame_2, width=13, bg=frame_2['bg'], fg='white', font='Arial 17')
         label_gas_calculated.place(x='115', y='165')
 
-        label_water_2 = Label(frame_2, width=20, height=2, text='Лічильник води \n(грн)',
+        label_water_2 = Label(frame_2, width=20, height=2, text='Водопостачання та\nводовідведення (грн)',
                               bg=frame_2['bg'], fg='white', font='Arial 17')
         label_water_2.place(x='70', y='230')
         label_water_calculated = Label(frame_2, width=13, bg=frame_2['bg'], fg='white', font='Arial 17')
         label_water_calculated.place(x='115', y='295')
 
-        label_electricity_2 = Label(frame_2, width=20, height=2, text='Лічильник електроенергії \n(грн)',
+        label_electricity_2 = Label(frame_2, width=20, height=2, text='Електропостачання \n(грн)',
                                     bg=frame_2['bg'], fg='white', font='Arial 17')
         label_electricity_2.place(x='70', y='360')
         label_electricity_calculated = Label(frame_2, width=13, bg=frame_2['bg'], fg='white', font='Arial 17')
@@ -162,49 +170,10 @@ def main():
     """ The function that launches the graphical interface of the Main menu """
     window = Tk()
     window.geometry('850x600+530+170')
-    app_1 = Main_Menu()
+    app = Main_Menu()
     window.protocol('WM_DELETE_WINDOW', program_exit)
     window.mainloop()
-
-
-def calculate():
-    """ The Function that is responsible for calculating utility bills """
-
-    rate_dict = {'gas': 0, 'water': 0, 'electricity': 0}
-    gas_calc = 0
-    water_calc = 0
-    electricity_calc = 0
-    try:
-        with open('rate_dictionary.txt') as file:
-            for i in file.readlines():
-                key, val = i.strip().split(':')
-                rate_dict[key] = val
-    except FileNotFoundError:
-        messagebox.showerror('Помилка', 'Увага! Файл з тарифами не знайдено. Перейдіть до налаштувань та вкажіть діючі '
-                                        'тарифи на комунальній послуги.')
-    except IOError:
-        messagebox.showerror('Помилка', 'Увага! Файл з тарифами не знайдено. Перейдіть до налаштувань та вкажіть діючі '
-                                        'тарифи на комунальній послуги.')
-    except ValueError:
-        messagebox.showerror('Помилка', 'Увага! Файл з тарифами було пошкоджено. Перейдіть до налаштувань та вкажіть '
-                                        'діючі тарифи на комунальній послуги.')
-    try:
-        gas_calc = (float(rate_dict['gas']) * float(entry_gas_main.get()))
-        water_calc = (float(rate_dict['water']) * float(entry_water_main.get()))
-        electricity_calc = (float(rate_dict['electricity']) * float(entry_electricity_main.get()))
-    except ValueError:
-        messagebox.showerror('Помилка', 'Вказані дані не відповідають числовому формату. '
-                                        '\nБудь ласка, перевірте вказану інформацію')
-    try:
-        label_gas_calculated.configure(text='{:8.3f}'.format(gas_calc))
-        label_water_calculated.configure(text='{:8.3f}'.format(water_calc))
-        label_electricity_calculated.configure(text='{:8.3f}'.format(electricity_calc))
-    except ValueError:
-        messagebox.showerror('Помилка', 'Вказані дані не відповідають числовому формату. '
-                                        '\nБудь ласка, перевірте вказану інформацію')
-    except TypeError:
-        messagebox.showerror('Помилка', 'Вказані дані не відповідають числовому формату. '
-                                        '\nБудь ласка, перевірте вказану інформацію')
+    dict_remembering('rate_dictionary.txt', stable_rate_dict)
 
 
 def settings():
@@ -220,75 +189,80 @@ def settings():
     set_win.mainloop()
 
 
+def calculate():
+    calculating(entry_gas_main.get(), entry_water_main.get(), entry_electricity_main.get())
+
+
+def calculating(gas_in, water_in, electricity_in):
+    """ The Function that is responsible for calculating utility bills """
+
+    dict_remembering('rate_dictionary.txt', stable_rate_dict)
+
+    calculate_chek('gas', gas_in)
+    calculate_chek('water', water_in)
+    calculate_chek('electricity', electricity_in)
+
+    gas_calculated = (float(stable_rate_dict['gas']) * float(resources_for_count['gas']))
+    water_calculated = (float(stable_rate_dict['water']) * float(resources_for_count['water']))
+    electricity_calculated = (float(stable_rate_dict['electricity']) * float(resources_for_count['electricity']))
+
+    label_gas_calculated.configure(text='{:8.3f}'.format(gas_calculated))
+    label_water_calculated.configure(text='{:8.3f}'.format(water_calculated))
+    label_electricity_calculated.configure(text='{:8.3f}'.format(electricity_calculated))
+
+
+def calculate_chek(resource, enter_data):
+    global resources_for_count
+    resources_for_count = {'gas': 0.0, 'water': 0.0, 'electricity': 0.0}
+
+    try:
+        if enter_data == '':
+            resources_for_count[resource] = 0
+            return 'Verification was unsuccessful'
+        elif not 0 <= float(enter_data) <= 999:
+            resources_for_count[resource] = 0
+            raise ValueError
+        else:
+            resources_for_count[resource] = float(enter_data)
+            return 'Verification was successful'
+    except ValueError:
+        messagebox.showwarning('Увага!', "Деякі обчислення не виконані через невідповідність формату: "
+                                         "це має бути невід'ємне число не більше за 999.")
+        return 'ValueError'
+    except TypeError:
+        messagebox.showwarning('Увага!', "Деякі обчислення не виконані через невідповідність формату: "
+                                         "це має бути невід'ємне число не більше за 999.")
+        return 'TypeError'
+    except NameError:
+        messagebox.showwarning('Увага!', "Втрачено шляха до таблиці тарифів. Для подальшої роботи потрібне "
+                                             "перевстанолвення програми.")
+        return 'NameError'
+
+
 def settings_save():
     """ The Function that is responsible for exiting the settings menu """
 
     answer = messagebox.askyesno(title='Закінчити редагування',
                                  message='Зберегти зміни?')
     if answer:
-
-        rate_changing()
+        tariffs_changing(entry_gas.get(), entry_water.get(), entry_electricity.get())
         set_win.destroy()
         button_settings.configure(state=NORMAL)
-        """except ValueError:
-            messagebox.showerror('Помилка', 'Вказані дані не відповідають числовому формату. '
-                                        '\nБудь ласка, перевірте вказану інформацію')"""
+
     elif not answer:
         set_win.destroy()
         button_settings.configure(state=NORMAL)
 
 
-def rate_changing():
+def tariffs_changing(gas, water, electricity):
     """ The Function that is responsible for creating/editing utility tariffs """
 
-    rate_dict = dict(gas=0, water=0, electricity=0)
-    try:
-        if entry_gas.get() == '':
-            with open('rate_dictionary.txt', 'r') as file:
-                for i in file.readlines():
-                    key, val = i.strip().split(':')
-                    if key == 'gas':
-                        rate_dict[key] = val
-        else:
-            rate_dict['gas'] = float(entry_gas.get())
-
-        if entry_water.get() == '':
-            with open('rate_dictionary.txt', 'r') as file:
-                for i in file.readlines():
-                    key, val = i.strip().split(':')
-                    if key == 'water':
-                        rate_dict[key] = val
-        else:
-            rate_dict['water'] = float(entry_water.get())
-
-        if entry_electricity.get() == '':
-            with open('rate_dictionary.txt', 'r') as file:
-                for i in file.readlines():
-                    key, val = i.strip().split(':')
-                    if key == 'electricity':
-                        rate_dict[key] = val
-        else:
-            rate_dict['electricity'] = float(entry_electricity.get())
-    except ValueError:
-        messagebox.showerror('Помилка', 'Увага! Файл з тарифами було пошкоджено. Будь ласка, вкажіть '
-                                        'діючі тарифи на комунальній послуги.')
-    try:
-        with open('rate_dictionary.txt', 'w') as file:
-            for key, val in rate_dict.items():
-                file.write('{}:{}\n'.format(key, val))
-    except FileNotFoundError:
-        messagebox.showwarning('УВАГА!', 'Попередній файл не знайдено. Створено новий файл з тарифами.')
-        with open('rate_dictionary.txt', 'w') as file:
-            for key, val in rate_dict.items():
-                file.write('{}:{}\n'.format(key, val))
-    except IOError:
-        messagebox.showwarning('УВАГА!', 'Попередній файл не знайдено. Створено новий файл з тарифами.')
-        with open('rate_dictionary.txt', 'w') as file:
-            for key, val in rate_dict.items():
-                file.write('{}:{}\n'.format(key, val))
-    except ValueError:
-        messagebox.showerror('Помилка', 'Вказані дані не відповідають числовому формату. '
-                                        '\nБудь ласка, перевірте вказану інформацію')
+    dict_write_chek('gas', gas)
+    dict_write('gas', gas)
+    dict_write_chek('water', water)
+    dict_write('water', water)
+    dict_write_chek('electricity', electricity)
+    dict_write('electricity', electricity)
 
 
 def program_exit():
