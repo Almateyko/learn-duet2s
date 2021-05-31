@@ -172,6 +172,7 @@ def main():
     window.geometry('850x600+530+170')
     app = Main_Menu()
     window.protocol('WM_DELETE_WINDOW', program_exit)
+    window.resizable(False, False)
     window.mainloop()
     dict_remembering('rate_dictionary.txt', stable_rate_dict)
 
@@ -186,6 +187,7 @@ def settings():
     set_win.geometry("455x400+60+370")
     app = Settings_Menu()
     set_win.protocol('WM_DELETE_WINDOW', settings_save)
+    set_win.resizable(False, False)
     set_win.mainloop()
 
 
