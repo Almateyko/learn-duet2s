@@ -198,6 +198,9 @@ def calculate():
 def calculating(gas_in, water_in, electricity_in):
     """ The Function that is responsible for calculating utility bills """
 
+    global resources_for_count
+    resources_for_count = {'gas': 0.0, 'water': 0.0, 'electricity': 0.0}
+
     dict_remembering('rate_dictionary.txt', stable_rate_dict)
 
     calculate_chek('gas', gas_in)
@@ -214,9 +217,6 @@ def calculating(gas_in, water_in, electricity_in):
 
 
 def calculate_chek(resource, enter_data):
-    global resources_for_count
-    resources_for_count = {'gas': 0.0, 'water': 0.0, 'electricity': 0.0}
-
     try:
         if enter_data == '':
             resources_for_count[resource] = 0
@@ -237,7 +237,7 @@ def calculate_chek(resource, enter_data):
         return 'TypeError'
     except NameError:
         messagebox.showwarning('Увага!', "Втрачено шляха до таблиці тарифів. Для подальшої роботи потрібне "
-                                             "перевстанолвення програми.")
+                                         "перевстанолвення програми.")
         return 'NameError'
 
 
