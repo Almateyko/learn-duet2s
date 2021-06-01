@@ -217,6 +217,8 @@ def calculating(gas_in, water_in, electricity_in):
 
 
 def calculate_chek(resource, enter_data, dict_for_count):
+    """ The Function that is responsible for calculating utility bills """
+
     try:
         if enter_data == '':
             dict_for_count[resource] = 0
