@@ -14,7 +14,7 @@ except FileNotFoundError:
 
 
 class Hover_Button(Button):
-    """ The Class that controls the highlighting of buttons on hover  """
+    """ The Class that controls the highlighting of buttons on hover """
 
     def __init__(self, master, **kw):
         Button.__init__(self, master=master, **kw)
@@ -203,9 +203,9 @@ def calculating(gas_in, water_in, electricity_in):
 
     dict_remembering('rate_dictionary.txt', stable_rate_dict)
 
-    calculate_chek('gas', gas_in)
-    calculate_chek('water', water_in)
-    calculate_chek('electricity', electricity_in)
+    calculate_chek('gas', gas_in, resources_for_count)
+    calculate_chek('water', water_in, resources_for_count)
+    calculate_chek('electricity', electricity_in, resources_for_count)
 
     gas_calculated = (float(stable_rate_dict['gas']) * float(resources_for_count['gas']))
     water_calculated = (float(stable_rate_dict['water']) * float(resources_for_count['water']))
@@ -216,16 +216,16 @@ def calculating(gas_in, water_in, electricity_in):
     label_electricity_calculated.configure(text='{:8.3f}'.format(electricity_calculated))
 
 
-def calculate_chek(resource, enter_data):
+def calculate_chek(resource, enter_data, dict_for_count):
     try:
         if enter_data == '':
-            resources_for_count[resource] = 0
+            dict_for_count[resource] = 0
             return 'Verification was unsuccessful'
         elif not 0 <= float(enter_data) <= 999:
-            resources_for_count[resource] = 0
+            dict_for_count[resource] = 0
             raise ValueError
         else:
-            resources_for_count[resource] = float(enter_data)
+            dict_for_count[resource] = enter_data
             return 'Verification was successful'
     except ValueError:
         messagebox.showwarning('Увага!', "Деякі обчислення не виконані через невідповідність формату: "
@@ -260,11 +260,8 @@ def tariffs_changing(gas, water, electricity):
     """ The Function that is responsible for creating/editing utility tariffs """
 
     dict_write_chek('gas', gas)
-    dict_write('gas', gas)
     dict_write_chek('water', water)
-    dict_write('water', water)
     dict_write_chek('electricity', electricity)
-    dict_write('electricity', electricity)
 
 
 def program_exit():

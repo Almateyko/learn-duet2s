@@ -38,6 +38,7 @@ def dict_write_chek(resource, val):
             raise ValueError
         else:
             rate_dict[resource] = float(val)
+            dict_write(resource, val)
             return 'Verification was successful'
     except ValueError:
         messagebox.showwarning('Увага!', "Частина внесених даних не збережена через невідповідність формату: "
